@@ -156,14 +156,19 @@ def executar_bresenham_circle(xc_entry, yc_entry, r_entry):
 
 def main():
     root = tk.Tk()
-    root.title("Algoritmos de Traçado de Gráficos")
+    root.title("Atividade 2 - Algoritmos de traçado de retas e circunferências")
     root.configure(bg='#F0F0F0')
-    root.geometry('400x600')
+    root.geometry('400x650')
     root.resizable(False, False)
 
+    #titlo e meus dados
     titulo_font = font.Font(family='Helvetica', size=20, weight='bold')
-    titulo_label = tk.Label(root, text="Traçado de Gráficos", bg='#F0F0F0', font=titulo_font)
+    titulo_label = tk.Label(root, text="Algoritmos de Traçado", bg='#F0F0F0', font=titulo_font)
     titulo_label.pack(pady=20)
+
+    autor_font = font.Font(family='Helvetica', size=12)
+    autor_label = tk.Label(root, text="Lucca G. Gomes\n201900560202", bg='#F0F0F0', font=autor_font)
+    autor_label.pack(pady=5)
 
     button_font = font.Font(family='Helvetica', size=12)
 
