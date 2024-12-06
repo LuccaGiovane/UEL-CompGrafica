@@ -1,17 +1,11 @@
 import tkinter as tk
-from tkinter import simpledialog, messagebox, font
+from tkinter import messagebox, font
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def dda_line(x1, y1, x2, y2):
-    """
-    Implementa o algoritmo DDA para traçado de retas.
-    """
     points = []
-
     dx = x2 - x1
     dy = y2 - y1
-
     steps = max(abs(dx), abs(dy))
 
     if steps == 0:
@@ -31,11 +25,7 @@ def dda_line(x1, y1, x2, y2):
     return points
 
 def bresenham_line(x1, y1, x2, y2):
-    """
-    Implementa o algoritmo de Bresenham para traçado de retas.
-    """
     points = []
-
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
 
@@ -66,9 +56,6 @@ def bresenham_line(x1, y1, x2, y2):
     return points
 
 def bresenham_circle(xc, yc, r):
-    """
-    Implementa o algoritmo de Bresenham para traçado de circunferências.
-    """
     points = []
     x = 0
     y = r
@@ -95,22 +82,16 @@ def bresenham_circle(xc, yc, r):
         else:
             d = d + 4 * x + 6
 
-    #remover os ptos duplicados
     unique_points = list(set(points))
     return unique_points
 
 def plot_points(points, title, color='blue'):
-    """
-    Plota os pontos utilizando matplotlib.
-    """
     if not points:
         messagebox.showwarning("Aviso", "Nenhum ponto para plotar.")
         return
 
     x_coords, y_coords = zip(*points)
-    
     fig, ax = plt.subplots(figsize=(6,6))
-    # pixels sao representados como "quadradinhos"
     ax.scatter(x_coords, y_coords, c=color, marker='s')
     ax.set_title(title)
     ax.set_xlabel('X')
@@ -119,102 +100,154 @@ def plot_points(points, title, color='blue'):
     ax.set_aspect('equal')
     plt.show()
 
-def get_line_points(root):
-    """
-    Solicita ao usuário os pontos para traçado de reta.
-    """
-    try:
-        x1 = float(simpledialog.askstring("Entrada", "Digite x1:", parent=root))
-        y1 = float(simpledialog.askstring("Entrada", "Digite y1:", parent=root))
-        x2 = float(simpledialog.askstring("Entrada", "Digite x2:", parent=root))
-        y2 = float(simpledialog.askstring("Entrada", "Digite y2:", parent=root))
-        return x1, y1, x2, y2
-    except (TypeError, ValueError):
-        messagebox.showerror("Erro", "Entrada inválida. Por favor, insira números válidos.")
-        return None
+def mostrar_frame_retas_dda(frame_retas, frame_circulo, dda_button_retas, bresenham_button_retas):
+    frame_circulo.pack_forget()
+    frame_retas.pack(pady=10)
+    dda_button_retas.grid(row=0, column=0, padx=5)
+    bresenham_button_retas.grid_remove()#gambiarra pq aparecia os 2 botao da reta kkkk
 
-def get_circle_parameters(root):
-    """
-    Solicita ao usuário os parâmetros para traçado de circunferência.
-    """
+def mostrar_frame_retas_bresenham(frame_retas, frame_circulo, dda_button_retas, bresenham_button_retas):
+    frame_circulo.pack_forget()
+    frame_retas.pack(pady=10)
+    bresenham_button_retas.grid(row=0, column=0, padx=5)
+    dda_button_retas.grid_remove()#mesma gambiarra so que pro dda
+
+def mostrar_frame_circulo(frame_retas, frame_circulo):
+    frame_retas.pack_forget()
+    frame_circulo.pack(pady=10)
+
+def executar_dda(x1_entry, y1_entry, x2_entry, y2_entry):
     try:
-        xc = float(simpledialog.askstring("Entrada", "Digite o centro x (xc):", parent=root))
-        yc = float(simpledialog.askstring("Entrada", "Digite o centro y (yc):", parent=root))
-        r = float(simpledialog.askstring("Entrada", "Digite o raio (r):", parent=root))
+        x1 = float(x1_entry.get())
+        y1 = float(y1_entry.get())
+        x2 = float(x2_entry.get())
+        y2 = float(y2_entry.get())
+    except ValueError:
+        messagebox.showerror("Erro", "Entrada inválida. Por favor, insira números válidos.")
+        return
+    dda_points = dda_line(x1, y1, x2, y2)
+    plot_points(dda_points, f'DDA Reta: ({x1},{y1}) -> ({x2},{y2})', color='red')
+
+def executar_bresenham_line(x1_entry, y1_entry, x2_entry, y2_entry):
+    try:
+        x1 = float(x1_entry.get())
+        y1 = float(y1_entry.get())
+        x2 = float(x2_entry.get())
+        y2 = float(y2_entry.get())
+    except ValueError:
+        messagebox.showerror("Erro", "Entrada inválida. Por favor, insira números válidos.")
+        return
+    bresenham_points = bresenham_line(int(round(x1)), int(round(y1)), int(round(x2)), int(round(y2)))
+    plot_points(bresenham_points, f'Bresenham Reta: ({x1},{y1}) -> ({x2},{y2})', color='green')
+
+def executar_bresenham_circle(xc_entry, yc_entry, r_entry):
+    try:
+        xc = float(xc_entry.get())
+        yc = float(yc_entry.get())
+        r = float(r_entry.get())
         if r < 0:
             messagebox.showerror("Erro", "O raio deve ser não negativo.")
-            return None
-        return xc, yc, r
-    except (TypeError, ValueError):
+            return
+    except ValueError:
         messagebox.showerror("Erro", "Entrada inválida. Por favor, insira números válidos.")
-        return None
-
-def executar_dda(root):
-    """
-    Executa o algoritmo DDA para traçado de retas.
-    """
-    pontos = get_line_points(root)
-    if pontos:
-        x1, y1, x2, y2 = pontos
-        dda_points = dda_line(x1, y1, x2, y2)
-        plot_points(dda_points, f'DDA Reta: ({x1},{y1}) -> ({x2},{y2})', color='red')
-
-def executar_bresenham_line(root):
-    """
-    Executa o algoritmo de Bresenham para traçado de retas.
-    """
-    pontos = get_line_points(root)
-    if pontos:
-        x1, y1, x2, y2 = pontos
-        bresenham_points = bresenham_line(int(round(x1)), int(round(y1)), int(round(x2)), int(round(y2)))
-        plot_points(bresenham_points, f'Bresenham Reta: ({x1},{y1}) -> ({x2},{y2})', color='green')
-
-def executar_bresenham_circle(root):
-    """
-    Executa o algoritmo de Bresenham para traçado de circunferências.
-    """
-    params = get_circle_parameters(root)
-    if params:
-        xc, yc, r = params
-        bresenham_points = bresenham_circle(int(round(xc)), int(round(yc)), int(round(r)))
-        plot_points(bresenham_points, f'Bresenham Circunferência: Centro=({xc},{yc}), Raio={r}', color='blue')
+        return
+    bresenham_points = bresenham_circle(int(round(xc)), int(round(yc)), int(round(r)))
+    plot_points(bresenham_points, f'Bresenham Circunferência: Centro=({xc},{yc}), Raio={r}', color='blue')
 
 def main():
-    # Interface gráfica principal
     root = tk.Tk()
     root.title("Algoritmos de Traçado de Gráficos")
     root.configure(bg='#F0F0F0')
-
-    
-    root.geometry('400x400')
+    root.geometry('400x600')
     root.resizable(False, False)
 
-    # Título
     titulo_font = font.Font(family='Helvetica', size=20, weight='bold')
     titulo_label = tk.Label(root, text="Traçado de Gráficos", bg='#F0F0F0', font=titulo_font)
     titulo_label.pack(pady=20)
 
-    # Botões
     button_font = font.Font(family='Helvetica', size=12)
 
-    dda_button = tk.Button(root, text="DDA para Retas", command=lambda: executar_dda(root),
+    #entrada para retas
+    frame_retas = tk.Frame(root, bg='#F0F0F0')
+    tk.Label(frame_retas, text="Insira os valores para a Reta:", bg='#F0F0F0').pack(pady=5)
+    entrada_retas_frame = tk.Frame(frame_retas, bg='#F0F0F0')
+    entrada_retas_frame.pack()
+
+    tk.Label(entrada_retas_frame, text="X1:", bg='#F0F0F0').grid(row=0, column=0, padx=5, pady=5)
+    x1_entry = tk.Entry(entrada_retas_frame)
+    x1_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    tk.Label(entrada_retas_frame, text="Y1:", bg='#F0F0F0').grid(row=0, column=2, padx=5, pady=5)
+    y1_entry = tk.Entry(entrada_retas_frame)
+    y1_entry.grid(row=0, column=3, padx=5, pady=5)
+
+    tk.Label(entrada_retas_frame, text="X2:", bg='#F0F0F0').grid(row=1, column=0, padx=5, pady=5)
+    x2_entry = tk.Entry(entrada_retas_frame)
+    x2_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    tk.Label(entrada_retas_frame, text="Y2:", bg='#F0F0F0').grid(row=1, column=2, padx=5, pady=5)
+    y2_entry = tk.Entry(entrada_retas_frame)
+    y2_entry.grid(row=1, column=3, padx=5, pady=5)
+
+    executar_retas_frame = tk.Frame(frame_retas, bg='#F0F0F0')
+    executar_retas_frame.pack(pady=10)
+
+
+    dda_button_retas = tk.Button(executar_retas_frame, text="Plotar DDA",
+                                 command=lambda: executar_dda(x1_entry, y1_entry, x2_entry, y2_entry),
+                                 width=10, bg='lightblue', font=button_font)
+
+    bresenham_button_retas = tk.Button(executar_retas_frame, text="Plotar Bresenham",
+                                       command=lambda: executar_bresenham_line(x1_entry, y1_entry, x2_entry, y2_entry),
+                                       width=15, bg='lightgreen', font=button_font)
+
+    
+    
+    #entrada para circunferência
+    frame_circulo = tk.Frame(root, bg='#F0F0F0')
+    tk.Label(frame_circulo, text="Insira os valores para a Circunferência:", bg='#F0F0F0').pack(pady=5)
+    entrada_circulo_frame = tk.Frame(frame_circulo, bg='#F0F0F0')
+    entrada_circulo_frame.pack()
+
+    tk.Label(entrada_circulo_frame, text="XC:", bg='#F0F0F0').grid(row=0, column=0, padx=5, pady=5)
+    xc_entry = tk.Entry(entrada_circulo_frame)
+    xc_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    tk.Label(entrada_circulo_frame, text="YC:", bg='#F0F0F0').grid(row=1, column=0, padx=5, pady=5)
+    yc_entry = tk.Entry(entrada_circulo_frame)
+    yc_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    tk.Label(entrada_circulo_frame, text="Raio:", bg='#F0F0F0').grid(row=2, column=0, padx=5, pady=5)
+    r_entry = tk.Entry(entrada_circulo_frame)
+    r_entry.grid(row=2, column=1, padx=5, pady=5)
+
+    tk.Button(frame_circulo, text="Plotar Circunferência",
+              command=lambda: executar_bresenham_circle(xc_entry, yc_entry, r_entry),
+              width=20, bg='lightcoral', font=button_font).pack(pady=10)
+
+
+
+    # Botões principais
+    dda_button = tk.Button(root, text="DDA para Retas",
+                           command=lambda: mostrar_frame_retas_dda(frame_retas, frame_circulo, dda_button_retas, bresenham_button_retas),
                            width=25, height=2, bg='lightblue', font=button_font)
     dda_button.pack(pady=10)
 
-    bresenham_line_button = tk.Button(root, text="Bresenham para Retas", command=lambda: executar_bresenham_line(root),
+    bresenham_line_button = tk.Button(root, text="Bresenham para Retas",
+                                      command=lambda: mostrar_frame_retas_bresenham(frame_retas, frame_circulo, dda_button_retas, bresenham_button_retas),
                                       width=25, height=2, bg='lightgreen', font=button_font)
     bresenham_line_button.pack(pady=10)
 
     bresenham_circle_button = tk.Button(root, text="Bresenham para Circunferências",
-                                        command=lambda: executar_bresenham_circle(root),
+                                        command=lambda: mostrar_frame_circulo(frame_retas, frame_circulo),
                                         width=25, height=2, bg='lightcoral', font=button_font)
     bresenham_circle_button.pack(pady=10)
 
-    # Botão Sair
     sair_button = tk.Button(root, text="Sair", command=root.quit,
                             width=25, height=2, bg='lightgray', font=button_font)
     sair_button.pack(pady=20)
 
+    # so pra nao mostrar nada alem dos botoes no inicio
     root.mainloop()
 
 if __name__ == "__main__":
