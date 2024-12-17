@@ -1,4 +1,11 @@
-# UEL - Computação Gráfica 💻🎨
+<div align="center">
+  <h1>UEL - Computação Gráfica 💻🎨</h1>
+  
+ <a href="" target="_blank">![License](https://img.shields.io/badge/license-MIT-blue.svg)</a><br>
+ ![C++](https://img.shields.io/badge/C%2B%2B-Green)
+ ![C](https://img.shields.io/badge/C-grey)
+ ![Python](https://img.shields.io/badge/3.1-Python-magenta)
+</div>
 
 Bem-vindo ao repositório **UEL-CompGrafica**! Este repositório é dedicado à disciplina de **Computação Gráfica** do curso de **Ciência da Computação** da **Universidade Estadual de Londrina**.<br>
 
