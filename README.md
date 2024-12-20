@@ -21,6 +21,7 @@ UEL-CompGrafica/
 ├── 02 - Casinha/
 ├── 03 - DDA e Bresenhan/
 ├── 04 - Quadrado/
+│
 └── README.md    
 ```
 
