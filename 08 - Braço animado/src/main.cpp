@@ -2,40 +2,47 @@
 #include <cmath>
 #include <iostream>
 
-// Variáveis globais
-const float BASE_SIZE = 0.1f;
-const float ARM_LENGTH = 0.3f;
-const float ARM_WIDTH = 0.05f;
+const float BASE_DIM = 0.12f;
+const float SEGMENT_LENGTH = 0.28f;
+const float SEGMENT_WIDTH = 0.06f;
 
-// Função para desenhar um retângulo
-void drawRectangle(float x, float y, float width, float height, float r, float g, float b) {
-    glColor3f(r, g, b);
+
+void renderRectangle(float posX, float posY, float width, float height, 
+                     float red, float green, float blue) {
+    /* === Function to draw rectangle === */
+
+    glColor3f(red, green, blue);
     glBegin(GL_QUADS);
-    glVertex2f(x - width / 2, y);
-    glVertex2f(x + width / 2, y);
-    glVertex2f(x + width / 2, y + height);
-    glVertex2f(x - width / 2, y + height);
+
+    glVertex2f(posX - width / 2, posY);
+    glVertex2f(posX + width / 2, posY);
+    glVertex2f(posX + width / 2, posY + height);
+    glVertex2f(posX - width / 2, posY + height);
+
     glEnd();
 }
 
-// Função para desenhar o braço mecânico
-void drawMechanicalArm() {
-    // Base fixa
-    drawRectangle(0.0f, 0.0f, BASE_SIZE, BASE_SIZE, 1.0f, 0.0f, 0.0f);
 
-    // Braço inferior
-    glPushMatrix();
-    float angleLowerArm = sin(glfwGetTime()) * 45.0f;
-    glTranslatef(0.0f, BASE_SIZE, 0.0f);
-    glRotatef(angleLowerArm, 0.0f, 0.0f, 1.0f);
-    drawRectangle(0.0f, 0.0f, ARM_WIDTH, ARM_LENGTH, 0.0f, 1.0f, 0.0f);
+void renderArmSystem() {
+    /* === Function to draw the arm === */
 
-    // Braço superior
+    float angleLowerSegment = sin(glfwGetTime() * 1.0f) * 55.0f;
+    float angleUpperSegment = sin(glfwGetTime() * 1.5f + 0.5f) * 45.0f;
+
+    //Draw base
+    renderRectangle(0.0f, 0.0f, BASE_DIM, BASE_DIM, 0.9f, 0.1f, 0.1f);
+
+    //Draw lower part rectangle
     glPushMatrix();
-    float angleUpperArm = sin(glfwGetTime() + 1.0f) * 45.0f;
-    glTranslatef(0.0f, ARM_LENGTH, 0.0f);
-    glRotatef(angleUpperArm, 0.0f, 0.0f, 1.0f);
-    drawRectangle(0.0f, 0.0f, ARM_WIDTH, ARM_LENGTH, 0.0f, 0.0f, 1.0f);
+    glTranslatef(0.0f, BASE_DIM, 0.0f);
+    glRotatef(angleLowerSegment, 0.0f, 0.0f, 1.0f);
+    renderRectangle(0.0f, 0.0f, SEGMENT_WIDTH, SEGMENT_LENGTH, 0.1f, 0.9f, 0.1f);
+
+    //Draw upper part rectangle
+    glPushMatrix();
+    glTranslatef(0.0f, SEGMENT_LENGTH, 0.0f);
+    glRotatef(angleUpperSegment, 0.0f, 0.0f, 1.0f);
+    renderRectangle(0.0f, 0.0f, SEGMENT_WIDTH, SEGMENT_LENGTH, 0.1f, 0.1f, 0.9f);
     glPopMatrix();
 
     glPopMatrix();
@@ -43,29 +50,30 @@ void drawMechanicalArm() {
 
 int main() {
     if (!glfwInit()) {
-        std::cerr << "Falha ao inicializar GLFW" << std::endl;
+        std::cerr << "Erro ao inicializar GLFW" << std::endl;
         return -1;
     }
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Bra\xC3\xA7o Mec\xC3\xA2nico Hier\xC3\xA1rquico", NULL, NULL);
-    if (!window) {
+    GLFWwindow* mainWindow = glfwCreateWindow(800, 600, "1COP028 - Braço Mecânico", NULL, NULL);
+    if (!mainWindow) {
         glfwTerminate();
         return -1;
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(mainWindow);
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(mainWindow)) {
         glClear(GL_COLOR_BUFFER_BIT);
         glLoadIdentity();
 
-        drawMechanicalArm();
+        renderArmSystem();
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(mainWindow);
         glfwPollEvents();
     }
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(mainWindow);
     glfwTerminate();
+
     return 0;
 }
